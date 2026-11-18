@@ -59,6 +59,13 @@ jobs:
           ./deps/build_rclone_ios.sh || echo "RCLONE_FAILED"
           ls deps/frameworks deps/libs deps/resources 2>/dev/null | head -40
 
+      - name: resolve packages + patch iOS15 APIs
+        run: |
+          cd src/ios
+          xcodebuild -resolvePackageDependencies -project Minis.xcodeproj -scheme Minis || true
+          cd ../..
+          python3 .github/ci/patch_swift14.py
+
       - name: xcodebuild iOS14
         run: |
           set -o pipefail
