@@ -14,13 +14,20 @@ jobs:
       - name: submodule tags
         run: git submodule foreach --recursive 'git fetch --tags --force' || true
 
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.x'
+
       - name: toolchain
         run: |
           xcodebuild -version
           xcrun --sdk iphoneos --show-sdk-version
-          brew install meson ninja llvm libarchive pkg-config go || true
+          brew install meson ninja llvm lld libarchive pkg-config || true
           (pip3 install --break-system-packages meson || true)
-          export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
+          LLVM_PREFIX=$(brew --prefix llvm)
+          export PATH="$LLVM_PREFIX/bin:/opt/homebrew/opt/lld/bin:$PATH"
+          ln -sf "$LLVM_PREFIX/bin/ld64.lld" /opt/homebrew/bin/ld64.lld 2>/dev/null || true
+          clang --version; ld64.lld --version || true
           echo "PATH=$PATH" >> $GITHUB_ENV
           which meson || true
           which go || true
