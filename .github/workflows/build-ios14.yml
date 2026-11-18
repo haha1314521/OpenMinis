@@ -1,0 +1,62 @@
+name: build-ios-ipa
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: submodule tags
+        run: git submodule foreach --recursive 'git fetch --tags --force' || true
+
+      - name: toolchain
+        run: |
+          xcodebuild -version
+          xcrun --sdk iphoneos --show-sdk-version
+          brew install ninja llvm libarchive pkg-config go || true
+          pip3 install meson || true
+          xcodebuild -downloadComponent MetalToolchain || true
+
+      - name: deps (best effort)
+        run: |
+          set -x
+          ./deps/build_lame.sh || echo "LAME_FAILED"
+          ./deps/build_ffmpeg.sh || echo "FFMPEG_FAILED"
+          ./deps/build_ish.sh || echo "ISH_FAILED"
+          ./deps/prepare_alpine_rootfs.sh || echo "ROOTFS_FAILED"
+          ./deps/build_rclone_ios.sh || echo "RCLONE_FAILED"
+
+      - name: xcodebuild iOS14
+        run: |
+          set -o pipefail
+          cd src/ios
+          xcodebuild -project Minis.xcodeproj -scheme Minis -configuration Release \
+            -destination "generic/platform=iOS" \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            IPHONEOS_DEPLOYMENT_TARGET=14.0 \
+            build 2>&1 | tee build.log | tail -400
+
+      - name: package ipa
+        if: always()
+        run: |
+          APP=$(find ~/Library/Developer/Xcode/DerivedData -name "Minis.app" -path "*Release-iphoneos*" | head -1)
+          echo "APP=$APP"
+          if [ -n "$APP" ]; then
+            rm -rf Payload && mkdir -p Payload
+            cp -R "$APP" Payload/
+            zip -qr Minis-unsigned.ipa Payload
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: minis-build
+          path: |
+            Minis-unsigned.ipa
+            src/ios/build.log
+          if-no-files-found: warn
