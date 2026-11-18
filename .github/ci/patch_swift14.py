@@ -33,6 +33,8 @@ for root in roots:
                     break
             j += 1
         s = s[:start] + FALLBACK + s[j+1:]
+        import os
+        os.chmod(p, 0o644)
         p.write_text(s, encoding="utf-8")
         patched.append(str(p))
 print("patched:", patched)
