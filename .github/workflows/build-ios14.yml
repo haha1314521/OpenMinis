@@ -20,6 +20,8 @@ jobs:
           xcrun --sdk iphoneos --show-sdk-version
           brew install meson ninja llvm libarchive pkg-config go || true
           (pip3 install --break-system-packages meson || true)
+          export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
+          echo "PATH=$PATH" >> $GITHUB_ENV
           which meson || true
           which go || true
 
