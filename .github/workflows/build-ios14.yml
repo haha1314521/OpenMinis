@@ -73,6 +73,7 @@ jobs:
           cd src/ios
           xcodebuild -project Minis.xcodeproj -scheme Minis -configuration Release \
             -destination "generic/platform=iOS" \
+            SWIFT_VERSION=5.0 SWIFT_STRICT_CONCURRENCY=minimal \
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
             build 2>&1 | tee build.log | tail -500
 
