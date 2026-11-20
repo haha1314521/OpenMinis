@@ -9,7 +9,7 @@ for m in re.finditer(r'([A-Za-z0-9]{6,24})\s*/\* Build configuration list for PB
     lists[m.group(2)] = guids
 
 WANT = {"Minis": "14.0", "MinisTestHost": "14.0",
-        "MinisFileProvider": "16.0", "MinisShare": "16.0", "AgentWidgetExtension": "16.0"}
+        "MinisFileProvider": "14.0", "MinisShare": "14.0", "AgentWidgetExtension": "14.0"}
 
 changed = 0
 for target, guids in lists.items():
