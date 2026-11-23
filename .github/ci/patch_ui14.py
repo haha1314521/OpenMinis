@@ -1,7 +1,7 @@
 import pathlib, re, sys
 
 ROOT = pathlib.Path("src/ios")
-SKIP_PARTS = {"MinisTests", "Tests", "Pods", "build_dd", "build", "DerivedData"}
+SKIP_PARTS = {"MinisTests", "Tests", "AgentWidget", "Pods", "build_dd", "build", "DerivedData"}
 
 # iOS 15 的 ShapeStyle 简写 → iOS 13/14 可用的 UIColor 映射
 STYLE_MAP = {
