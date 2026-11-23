@@ -65,9 +65,11 @@ jobs:
         run: |
           cd src/ios
           xcodebuild -resolvePackageDependencies -project Minis.xcodeproj -scheme Minis || true
+          xcodebuild -resolvePackageDependencies -project Minis.xcodeproj -scheme Minis -derivedDataPath build_dd || true
           cd ../..
           python3 .github/ci/patch_swift14.py
           python3 .github/ci/patch_pbxproj.py
+          python3 .github/ci/patch_deps.py
 
       - name: free space
         run: |
