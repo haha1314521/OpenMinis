@@ -71,6 +71,8 @@ jobs:
           python3 .github/ci/patch_pbxproj.py
           python3 .github/ci/patch_deps.py
           python3 .github/ci/patch_ui14.py
+          python3 .github/ci/patch_ui14b.py
+          python3 .github/ci/patch_ui14c.py
 
       - name: free space
         run: |
@@ -87,6 +89,7 @@ jobs:
             -destination "generic/platform=iOS" \
             -derivedDataPath build_dd -jobs 2 ONLY_ACTIVE_ARCH=YES \
             SWIFT_VERSION=5.0 SWIFT_STRICT_CONCURRENCY=minimal SWIFT_COMPILATION_MODE=singlefile \
+            OTHER_SWIFT_FLAGS='$(inherited) -DIOS14_NO_PHOTOS_PICKER' \
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
             build 2>&1 | tee build.log | tail -500
 
