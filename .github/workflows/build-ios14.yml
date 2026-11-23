@@ -74,6 +74,7 @@ jobs:
           python3 .github/ci/patch_ui14b.py
           python3 .github/ci/patch_ui14c.py
           python3 .github/ci/patch_ui14d.py
+          python3 .github/ci/patch_ui14e.py
 
       - name: free space
         run: |
