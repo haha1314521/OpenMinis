@@ -43,9 +43,9 @@ for p in files:
 
     # ---- 0) Button(_, role:)（iOS 15）→ 普通 Button（破坏性样式降级）
     s = re.sub(r'Button\(("(?:[^"]*)"), role:\s*\.cancel\)\s*\{',
-               r'Button() {', s)
+               r'Button(\1) {', s)
     s = re.sub(r'Button\(("(?:[^"]*)"), role:\s*\.destructive\)\s*\{',
-               r'Button() {', s)
+               r'Button(\1) {', s)
 
     # ---- 0b) overlay(alignment:content:)（iOS 15）→ overlay 内容偏移降级
     s = re.sub(r'\.overlay\(alignment:\s*\.[a-zA-Z]+\)\s*\{',
