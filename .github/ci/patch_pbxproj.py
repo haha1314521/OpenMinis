@@ -8,8 +8,8 @@ for m in re.finditer(r'([A-Za-z0-9]{6,24})\s*/\* Build configuration list for PB
     guids = re.findall(r'([A-Za-z0-9]{6,24})\s*/\* (?:Debug|Release) \*/', m.group(3))
     lists[m.group(2)] = guids
 
-WANT = {"Minis": "14.0", "MinisTestHost": "14.0",
-        "MinisShare": "14.0", "AgentWidgetExtension": "14.0"}
+# 只降主 App 与 Share 扩展；FileProvider / AgentWidget 是 iOS 16 专属能力，保持原版本并摘掉嵌入
+WANT = {"Minis": "14.0", "MinisTestHost": "14.0", "MinisShare": "14.0"}
 
 changed = 0
 for target, guids in lists.items():
@@ -30,10 +30,13 @@ for target, guids in lists.items():
             text = text[:m.start(1)] + nb + text[m.end(1):]
             changed += 1
 
-# MinisFileProvider 用的是 iOS 16 才有的 NSFileProviderReplicatedExtension 系列 API，
-# 不参与 iOS 14 构建：去掉主 target 对它的依赖和 appex 嵌入（target 保持 16.0）。
+# MinisFileProvider：NSFileProviderReplicatedExtension 是 iOS 16
 text = text.replace("\t\t\t\tE5FP00080 /* PBXTargetDependency */,\n", "")
 text = text.replace("\t\t\t\tE5FP00009 /* MinisFileProvider.appex in Embed Foundation Extensions */,\n", "")
+
+# AgentWidgetExtension：Live Activity 需要 iOS 16.1+，iOS 14 没有这个概念
+text = text.replace("\t\t\t\tE5H000080 /* PBXTargetDependency */,\n", "")
+text = text.replace("\t\t\t\tE5H000009 /* AgentWidgetExtension.appex in Embed Foundation Extensions */,\n", "")
 
 proj.write_text(text, encoding="utf-8")
 print("targets:", sorted(lists))
