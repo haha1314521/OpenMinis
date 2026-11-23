@@ -8,6 +8,7 @@ if not ROOT.exists():
 pkg = ROOT / "Package.swift"
 s = pkg.read_text(encoding="utf-8")
 s2 = s.replace(".iOS(.v15)", ".iOS(.v14)")
+pkg.chmod(0o644)
 pkg.write_text(s2, encoding="utf-8")
 print("package platforms patched:", s != s2)
 
@@ -131,5 +132,7 @@ public class URLSessionHTTPClientAdapter: HTTPClient {
   }
 }
 #endif'''
+if adapter.exists():
+    adapter.chmod(0o644)
 adapter.write_text(NEW, encoding="utf-8")
 print("adapter patched:", adapter)
